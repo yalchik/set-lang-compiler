@@ -1,4 +1,4 @@
-lexer grammar SetsLexer;
+grammar SetsLexer;
 
 options {
   language = Java;
@@ -57,13 +57,16 @@ TEMPLATE_ID : ('A'..'Z')+;
 ID : ('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'0'..'9'|'_')*;
 
 COMMENT
-    :   '//' ~('\n'|'\r')* '\r'? '\n' {$channel=HIDDEN;}
-    |   '/*' ( options {greedy=false;} : . )* '*/' {$channel=HIDDEN;}
-    ;
+    : '/*' .*? '*/' -> skip
+;
+
+LINE_COMMENT
+    : '//' ~[\r\n]* -> skip
+;
 
 WS  :   ( ' '
         | '\t'
         | '\r'
         | '\n'
-        ) {$channel=HIDDEN;}
+        ) -> channel(HIDDEN)
     ; 

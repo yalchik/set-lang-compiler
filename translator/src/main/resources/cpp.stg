@@ -1,0 +1,146 @@
+group cpp;
+
+program(statements) ::=
+<<
+<statements; separator="\n">
+
+int main()
+{
+  func_main();
+  return 0;
+}
+>>
+
+declaration_var(id, expression) ::=
+<<
+Object* <id><if(expression)> = <expression><endif>;
+>>
+
+declaration_func(template, name, params) ::=
+<<
+<template>
+Object* <name>(<params>);
+>>
+
+definition_func(template, name, params, block) ::=
+<<
+<template>
+Object* <name>(<params>)
+<block>
+>>
+
+block(body) ::=
+<<
+{
+  <body; separator="\n">
+}
+>>
+
+operator_assign(id, expression) ::=
+<<
+<id> = <expression>;
+>>
+
+operator_if(expr, block, elseblock) ::=
+<<
+if((<expr>)->toBool()) {
+  <block>
+}
+<if(elseblock)>
+else {
+  <elseblock>
+}
+<endif>
+>>
+
+operator_while(expr, block) ::=
+<<
+while((<expr>)->toBool()) {
+  <block>
+}
+>>
+
+operator_for(id, expr, block) ::=
+<<
+<id> = (<expr>)->toSet()->setFirst();
+do {
+  <block>
+  <id> = (<expr>)->toSet()->getNext();
+}
+while(<id> != (<expr>)->toSet()->first());
+>>
+
+operator_call(name, args) ::=
+<<
+<name>(<args>)
+>>
+
+operator_return(expr) ::=
+<<
+return <expr>;
+>>
+
+operator_read(id) ::=
+<<
+<id>->read();
+>>
+
+operator_write(expr) ::=
+<<
+(<expr>)->print();
+>>
+
+binary_operator(o1, op, o2) ::=
+<<
+((*<o1>) <op> <o2>)
+>>
+
+bracket_operator(expr) ::=
+<<
+(<expr>)
+>>
+
+insert_element(element) ::=
+<<
+->insert(<element>)
+>>
+
+variable(id) ::=
+<<
+var_<id>
+>>
+
+function(name) ::=
+<<
+func_<name>
+>>
+
+template_param(param) ::=
+<<
+class <param>
+>>
+
+template_func(params) ::=
+<<
+template \<<params; separator=", ">\>
+>>
+
+const_set() ::=
+<<
+(new Set())
+>>
+
+const_element_int(elem) ::=
+<<
+(new Element(<elem>))
+>>
+
+const_element_float(elem) ::=
+<<
+(new Element(<elem>))
+>>
+
+text(text) ::=
+<<
+<text>
+>>

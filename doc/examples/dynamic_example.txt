@@ -1,0 +1,12 @@
+var elem = 5;
+var set = { 1, 2, 3};
+
+def print(var x) {
+	write: x;
+}
+
+def main() {
+	print(elem);
+	print(set);
+	// т.е. можно передать любой тип
+}

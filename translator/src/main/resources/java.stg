@@ -1,0 +1,230 @@
+group java;
+
+program(statements, functions, variables) ::=
+<<
+public class Program {
+
+    <variables; separator="\n">
+      
+    public static void main(String[] args) {
+        try {
+          new Program().run();
+        }
+        catch (Throwable e) {
+          System.out.println("Runtime error! " + e.getMessage());          
+        }    
+    }
+  
+    public Entity run() {
+        <statements; separator="\n">
+    }
+  
+    <functions; separator="\n">
+    
+}
+>>
+
+declaration_var(id) ::=
+<<
+Entity <id>;
+>>
+
+definition_func(name, variables, params, body) ::=
+<<
+private Entity <name>(<params>) {
+    <variables; separator="\n">
+    <body; separator="\n">
+}
+>>
+
+block(body) ::=
+<<
+{
+    <body; separator="\n">
+}
+>>
+
+operator_assign(id, expression) ::=
+<<
+<id> = <expression>;
+>>
+
+operator_plus(id, expression) ::=
+<<
+<id>.add(<expression>);
+>>
+
+operator_minus(id, expression) ::=
+<<
+<id>.remove(<expression>);
+>>
+
+operator_if(expr, block, elseblock) ::=
+<<
+if((<expr>).toBool())
+<block>
+<if(elseblock)>
+else
+<elseblock>
+<endif>
+>>
+
+operator_while(expr, block) ::=
+<<
+while((<expr>).toBool())
+<block>
+>>
+
+operator_for(id, expr, block) ::=
+<<
+for (Row <id> : <expr>.getRows())
+<block>
+>>
+
+operator_switch(expr, block) ::=
+<<
+switch((<expr>).toString())
+<block>
+>>
+
+case_block(cases, default_case) ::=
+<<
+{
+<cases; separator="\n">
+<default_case>
+}
+>>
+
+operator_case(expr, statements) ::=
+<<
+case <expr>:
+    <statements; separator="\n">
+    break;
+>>
+
+operator_default(statements) ::=
+<<
+default:
+    <statements; separator="\n">
+>>
+
+operator_call(name, args) ::=
+<<
+<name>(<args>)
+>>
+
+arg(st) ::=
+<<
+(<st>).copy()
+>>
+
+operator_return(expr) ::=
+<<
+<if(expr)>
+return <expr>;
+<else>
+return null;
+<endif>
+
+>>
+
+operator_read(id, init) ::=
+<<
+<id> = <init>;
+<id>.read();
+>>
+
+operator_write(expr) ::=
+<<
+(<expr>).print();
+>>
+
+operator_cast_to_table(expr) ::=
+<<
+(<expr>).toTable()
+>>
+
+operator_cast_to_column(expr) ::=
+<<
+(<expr>).toColumn()
+>>
+
+operator_cast_to_row(expr) ::=
+<<
+(<expr>).toRow()
+>>
+
+operator_cell(id, column, row) ::=
+<<
+<id>.getCell(<column>, <row>)
+>>
+
+bracket_operator(expr) ::=
+<<
+(<expr>)
+>>
+
+insert_row(element) ::=
+<<
+.addRow(<element>)
+>>
+
+insert_column(element) ::=
+<<
+.addColumn(<element>)
+>>
+
+insert_cell(element) ::=
+<<
+.addCell(<element>)
+>>
+
+remove_row(row) ::=
+<<
+.remove(<row>)
+>>
+
+variable(id) ::=
+<<
+v_<id>
+>>
+
+function(name) ::=
+<<
+f_<name>
+>>
+
+const_table() ::=
+<<
+new Table()
+>>
+
+const_column(elem) ::=
+<<
+new Column(<elem>)
+>>
+
+const_row(elem) ::=
+<<
+new Row()
+>>
+
+text(text) ::=
+<<
+<text>
+>>
+
+entity_type() ::=
+<<
+Entity 
+>>
+
+new_row() ::=
+<<
+new Row()
+>>
+
+new_column() ::=
+<<
+new Column()
+>>

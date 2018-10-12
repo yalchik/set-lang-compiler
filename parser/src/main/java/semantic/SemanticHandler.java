@@ -9,117 +9,148 @@ import namestable.VariableNamesTable;
 import errors.ErrorsTable;
 
 public class SemanticHandler {
-	// С‚Р°Р±Р»РёС†Р° РёРјР„РЅ РґР»В¤ С„СѓРЅРєС†РёР№
-	private final FunctionNamesTable functionNamesTable = new FunctionNamesTable();
-	// С‚Р°Р±Р»РёС†Р° РёРјР„РЅ РґР»В¤ РіР»РѕР±Р°Р»СЊРЅС‹С… РїРµСЂРµРјРµРЅРЅС‹С…
-	// private final VariableNamesTable globalNamesTable = new
-	// VariableNamesTable();
-	// С‚Р°Р±Р»РёС†Р° СЃРµРјР°РЅС‚РёС‡РµСЃРєРёС… РѕС€РёР±РѕРє
-	private final ErrorsTable errorsTable = new ErrorsTable();
-	// С‚Р°Р±Р»РёС†Р° РёРјР„РЅ РґР»В¤ Р»РѕРєР°Р»СЊРЅС‹С… РїРµСЂРµРјРµРЅРЅС‹С…
-	private VariableNamesTable currentNamesTable = new VariableNamesTable();// globalNamesTable;
+    // таблица имён для функций
+    private final FunctionNamesTable functionNamesTable = new FunctionNamesTable();
+    // таблица семантических ошибок
+    private final ErrorsTable errorsTable = new ErrorsTable();
+    // таблица имён для локальных переменных
+    private VariableNamesTable currentNamesTable = new VariableNamesTable();
 
-	public ErrorsTable getErrorsTable() {
-		return errorsTable;
+    private Function currentFunction;
+
+    public ErrorsTable getErrorsTable() {
+	return errorsTable;
+    }
+
+    public void declareVariable(String id, int line) {
+	// если переменная ещё не объявлена, то добавляем её в таблицу имён,
+	// иначе генерируем ошибку
+	if (!currentNamesTable.isDeclarated(id)) {
+	    currentNamesTable.addVariable(new Variable(id, line));
+	} else {
+	    errorsTable.addError(String.format(
+		    "variable '%s' has already been declared", id), line);
+	}
+    }
+
+    public void declareFunction(String id, List<Variable> parameters, int line) {
+	// если функция ещё не объявлялась, то добавляем её в таблицу имён,
+	// иначе регистрируем ошибку
+	if (!functionNamesTable.isDeclarated(id)) {
+	    functionNamesTable.addFunction(new Function(id, parameters, line));
+	} else {
+	    errorsTable.addError(String.format(
+		    "function '%s' has already been declared", id), line);
+	}
+    }
+
+    public void defineFunction(String id, List<Variable> parameters, int line) {
+	// если функция уже объявлена, то сверяем количество параметров в
+	// объявлении и определении функции
+	// количество параметров должно совпадать
+	// если функция ещё не объявлена, то объявляем её
+	currentFunction = functionNamesTable.getFunction(id);
+	if (currentFunction != null) {
+	    List<Variable> declaredArgs = currentFunction.getArgs();
+	    List<Variable> defArgs = parameters;
+	    if ((defArgs == null && declaredArgs.size() > 0)
+		    || (defArgs != null && defArgs.size() != declaredArgs
+			    .size())) {
+		errorsTable.addError(String.format(
+			"function '%s' must have %d parameter(s). See line %d",
+			id, declaredArgs.size(), currentFunction.getLine()),
+			line);
+	    }
+	} else {
+	    currentFunction = new Function(id, parameters, line);
+	    functionNamesTable.addFunction(currentFunction);
 	}
 
-	public void declareVariable(String id, int line) {
-		// РµСЃР»Рё РїРµСЂРµРјРµРЅРЅР°В¤ РµС‰Р„ РЅРµ РѕР±СЉВ¤РІР»РµРЅР°, С‚Рѕ РґРѕР±Р°РІР»В¤РµРј РµР„ РІ С‚Р°Р±Р»РёС†Сѓ РёРјР„РЅ,
-		// РёРЅР°С‡Рµ РіРµРЅРµСЂРёСЂСѓРµРј РѕС€РёР±РєСѓ
-		if (!currentNamesTable.isDeclarated(id)) {
-			currentNamesTable.addVariable(new Variable(id, line));
-			// System.out.println($ID.line + " " + varName);
-		} else {
-			errorsTable.addError("variable \"" + id
-					+ "\" has already been declared", line);
+	// устанавливаем флаг определения функции, если он не установлен
+	// добавляем аргументы функции в локальную таблицу имён
+	// если флаг определения функции уже установлен, то регистрируем ошибку
+	// повторного определения функции
+	if (currentFunction.implement()) {
+	    if (parameters != null) {
+		for (Variable var : parameters) {
+		    currentNamesTable.addVariable(var);
 		}
+	    }
+	} else {
+	    errorsTable.addError(String.format(
+		    "function '%s' has already been implemented", id), line);
 	}
+    }
 
-	public void declareFunction(String id, List<Variable> parameters, int line,
-			List<String> templates) {
-		// РµСЃР»Рё С„СѓРЅРєС†РёВ¤ РµС‰Р„ РЅРµ РѕР±СЉВ¤РІР»В¤Р»Р°СЃСЊ, С‚Рѕ РґРѕР±Р°РІР»В¤РµРј РµР„ РІ С‚Р°Р±Р»РёС†Сѓ РёРјР„РЅ,
-		// РёРЅР°С‡Рµ СЂРµРіРёСЃС‚СЂРёСЂСѓРµРј РѕС€РёР±РєСѓ
-		if (!functionNamesTable.isDeclarated(id)) {
-			functionNamesTable.addFunction(new Function(id, parameters, line,
-					templates));
-		} else {
-			errorsTable.addError("function \"" + id
-					+ "\" has already been declared", line);
-		}
+    public void enterLocalNamesTable() {
+	// уходим в дочернюю таблицу имён
+	currentNamesTable = new VariableNamesTable(currentNamesTable);
+    }
+
+    public void enterParentNamesTable() {
+	// возвращаемся в родительскую таблицу имён
+	currentNamesTable = currentNamesTable.getParentTable();
+    }
+
+    public boolean checkVariableDeclaration(String id, int line) {
+	// проверяем, объявлена ли переменная
+	// если нет, то объявляем её
+	if (!currentNamesTable.isDeclarated(id)) {
+	    declareVariable(id, line);
+	    return false;
 	}
-
-	public void defineFunction(String id, List<Variable> parameters, int line,
-			List<String> templates) {
-		// РµСЃР»Рё С„СѓРЅРєС†РёВ¤ СѓР¶Рµ РѕР±СЉВ¤РІР»РµРЅР°, С‚Рѕ СЃРІРµСЂВ¤РµРј РєРѕР»РёС‡РµСЃС‚РІРѕ РїР°СЂР°РјРµС‚СЂРѕРІ РІ
-		// РѕР±СЉВ¤РІР»РµРЅРёРё Рё РѕРїСЂРµРґРµР»РµРЅРёРё С„СѓРЅРєС†РёРё
-		// РєРѕР»РёС‡РµСЃС‚РІРѕ РїР°СЂР°РјРµС‚СЂРѕРІ РґРѕР»Р¶РЅРѕ СЃРѕРІРїР°РґР°С‚СЊ
-		// РµСЃР»Рё С„СѓРЅРєС†РёВ¤ РµС‰Р„ РЅРµ РѕР±СЉВ¤РІР»РµРЅР°, С‚Рѕ РѕР±СЉВ¤РІР»В¤РµРј РµР„
-		Function currentFunction = functionNamesTable.getFunction(id);
-		if (currentFunction != null) {
-			List<Variable> declaredArgs = currentFunction.getArgs();
-			List<Variable> defArgs = parameters;
-			if ((defArgs == null && declaredArgs.size() > 0)
-					|| (defArgs != null && defArgs.size() != declaredArgs
-							.size())) {
-				errorsTable.addError("function \"" + id + "\" must have "
-						+ declaredArgs.size() + " parameter(s). See line "
-						+ currentFunction.getLine(), line);
-			}
-		} else {
-			currentFunction = new Function(id, parameters, line, templates);
-			functionNamesTable.addFunction(currentFunction);
-		}
-
-		// СѓСЃС‚Р°РЅР°РІР»РёРІР°РµРј С„Р»Р°Рі РѕРїСЂРµРґРµР»РµРЅРёВ¤ С„СѓРЅРєС†РёРё, РµСЃР»Рё РѕРЅ РЅРµ СѓСЃС‚Р°РЅРѕРІР»РµРЅ
-		// РґРѕР±Р°РІР»В¤РµРј Р°СЂРіСѓРјРµРЅС‚С‹ С„СѓРЅРєС†РёРё РІ Р»РѕРєР°Р»СЊРЅСѓСЋ С‚Р°Р±Р»РёС†Сѓ РёРјР„РЅ
-		// РµСЃР»Рё С„Р»Р°Рі РѕРїСЂРµРґРµР»РµРЅРёВ¤ С„СѓРЅРєС†РёРё СѓР¶Рµ СѓСЃС‚Р°РЅРѕРІР»РµРЅ, С‚Рѕ СЂРµРіРёСЃС‚СЂРёСЂСѓРµРј РѕС€РёР±РєСѓ
-		// РїРѕРІС‚РѕСЂРЅРѕРіРѕ РѕРїСЂРµРґРµР»РµРЅРёВ¤ С„СѓРЅРєС†РёРё
-		if (currentFunction.implement()) {
-			if (parameters != null) {
-				for (Variable var : parameters) {
-					currentNamesTable.addVariable(var);
-				}
-			}
-		} else {
-			errorsTable.addError("function \"" + id
-					+ "\" has already been implemented", line);
-		}
+	return true;
+    }
+    
+    public void checkVariableInitialization(String id, int line) {
+	// проверяем, инициализирована ли переменная
+	// если нет, то регистрируем ошибку
+	// (на самом деле проверяем, была ли она объявлена,
+	// так как это будет указывать на то, что её как-то проинициализировали)
+	if (!currentNamesTable.isDeclarated(id)) {
+		errorsTable.addError("variable \"" + id + "\" is not initializated",
+				line);
 	}
+}
 
-	public void enterLocalNamesTable() {
-		// СѓС…РѕРґРёРј РІ РґРѕС‡РµСЂРЅСЋСЋ С‚Р°Р±Р»РёС†Сѓ РёРјР„РЅ
-		currentNamesTable = new VariableNamesTable(currentNamesTable);
+    public void checkFunctionDeclaration(String id, int line) {
+	// проверяем, объявлена ли функция
+	// если нет, то регистрируем ошибку
+	if (!functionNamesTable.isDeclarated(id)) {
+	    errorsTable.addError(
+		    String.format("function '%s' is not declared", id), line);
 	}
+    }
 
-	public void enterParentNamesTable() {
-		// РІРѕР·РІСЂР°С‰Р°РµРјСЃВ¤ РІ СЂРѕРґРёС‚РµР»СЊСЃРєСѓСЋ С‚Р°Р±Р»РёС†Сѓ РёРјР„РЅ
-		currentNamesTable = currentNamesTable.getParentTable();
+    public void setCurrentFunctionReturn() {
+	if (currentFunction != null) {
+	    currentFunction.setReturns();
 	}
+    }
 
-	public void checkVariableDeclaration(String id, int line) {
-		// РїСЂРѕРІРµСЂВ¤РµРј, РѕР±СЉВ¤РІР»РµРЅР° Р»Рё РїРµСЂРµРјРµРЅРЅР°В¤
-		// РµСЃР»Рё РЅРµС‚, С‚Рѕ СЂРµРіРёСЃС‚СЂРёСЂСѓРµРј РѕС€РёР±РєСѓ
-		if (!currentNamesTable.isDeclarated(id)) {
-			errorsTable.addError("variable \"" + id + "\" is not declared",
-					line);
-		}
+    public void checkFunctionReturn() {
+	if (!currentFunction.isReturns()) {
+	    errorsTable.addError(String.format(
+		    "function '%s' has no return operator",
+		    currentFunction.getName()), currentFunction.getLine());
 	}
+    }
 
-	public void checkFunctionDeclaration(String id, int line) {
-		// РїСЂРѕРІРµСЂВ¤РµРј, РѕР±СЉВ¤РІР»РµРЅР° Р»Рё С„СѓРЅРєС†РёВ¤
-		// РµСЃР»Рё РЅРµС‚, С‚Рѕ СЂРµРіРёСЃС‚СЂРёСЂСѓРµРј РѕС€РёР±РєСѓ
-		if (!functionNamesTable.isDeclarated(id)) {
-			errorsTable.addError("function \"" + id + "\" is not declared",
-					line);
-		}
-	}
+    public boolean isGlobalCurrentNamesTable() {
+	return currentNamesTable.getParentTable() == null ? true : false;
+    }
 
-	public void checkMainFunction() {
-		// РїСЂРѕРІРµСЂВ¤РµРј, РѕРїСЂРµРґРµР»РµРЅР° Р»Рё С„СѓРЅРєС†РёВ¤ СЃ РёРјРµРЅРµРј main
-		// РµСЃР»Рё РЅРµС‚, С‚Рѕ РіРµРЅРµСЂРёСЂСѓРµРј РѕС€РёР±РєСѓ
-		if (!functionNamesTable.isDeclarated("main")) {
-			errorsTable.addError("function \"" + "main" + "\" must be defined",
-					0);
-		}
+    @SuppressWarnings("rawtypes")
+    public void checkCallFunction(String id, List args, int line) {
+	Function callingFunction = functionNamesTable.getFunction(id);
+	if (callingFunction != null) {
+	    if (args.size() != callingFunction.getArgs().size()) {
+		errorsTable.addError(String.format(
+			"function '%s' must have %d argument(s). See line %d",
+			id, callingFunction.getArgs().size(),
+			callingFunction.getLine()), line);
+	    }
 	}
+    }
+
 }

@@ -1,4 +1,4 @@
-lexer grammar SetsLexer;
+lexer grammar RLexer;
 
 options {
   language = Java;
@@ -8,13 +8,19 @@ options {
   package grammar;
 }
 
-VARIABLE : 'var';
+
+TYPE_TABLE : 'table';
+TYPE_COLUMN : 'column';
+TYPE_ROW : 'row';
 
 LEFT_ROUND_BRACKET : '(';
 RIGHT_ROUND_BRACKET : ')';
 
 LEFT_BRACE : '{';
 RIGHT_BRACE : '}';
+
+LEFT_SQUARE_BRACKET : '[';
+RIGHT_SQUARE_BRACKET : ']';
 
 COMMA : ',';
 COLON : ':';
@@ -27,32 +33,21 @@ ASSIGN_MINUS : '-=';
 FUNCTION : 'function';
 DEFINITION : 'def';
 RETURN : 'return';
-WRITE : 'write:';
-READ : 'read:';
-TEMPLATE : 'template';
-
-OP_MULTIPLY : '*';
-OP_SLASH : '\\';
-OP_PLUS : '+';
-OP_MINUS : '-';
-OP_EQUAL : '==';
-OP_NOT_EQUAL : '!=';
-OP_LESS : '<';
-OP_MORE : '>';
-OP_LESS_OR_EQUAL : '<=';
-OP_MORE_OR_EQUAL : '>=';
+WRITE : 'out:';
+READ_COLUMN : 'in:';
+READ_ROW : 'in{}:';
+//READ : READ_COLUMN | READ_ROW;
 
 FOR : 'for';
 IF : 'if';
 ELSE : 'else';
 WHILE : 'while';
 DO : 'do';
+SWITCH : 'switch';
+DEFAULT : 'default';
+CASE : 'case';
 
-INT   : '0'..'9'+;
-
-FLOAT   : ('0'..'9')+ '.' ('0'..'9')*;
-
-TEMPLATE_ID : ('A'..'Z')+;
+STRING : '"' ('a'..'z'|'A'..'Z'|'0'..'9'|'_'|':'|WS)+ '"';
 
 ID : ('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'0'..'9'|'_')*;
 

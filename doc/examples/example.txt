@@ -1,0 +1,51 @@
+function print(entity);
+function main();
+
+c1 = "id";
+c2 = "name";
+c3 = "department";
+	
+def tableFactory() {	
+	r1 = {"1", "john", "Research"};
+	r2 = {"2", "jack", "Sales"};
+	r3 = {"3", "tom", "Research"};
+	r4 = {"4", "bart", "Government"};
+	
+	t = [];
+	t += c1;
+	t += c2;
+	t += c3;
+	t += r1;
+	t += r2;
+	t += r3;
+	t += r4;
+	
+	return t;
+}
+
+t = tableFactory();
+main();
+
+def main() {	
+	print(t);	
+
+	for(r : t) {
+		switch(t[c3][r]) {
+		case "Research":
+			print(t[c2][r]);
+		case "Sales":
+			print(t[c1][r]);
+		default:
+			t -= r;
+		}		
+	}
+	return;
+}
+
+
+def print(entity) {
+	out: entity;
+	return;
+}
+
+return;

@@ -1,0 +1,47 @@
+function main();
+
+// столбцы
+c1 = "id";
+c2 = "name";
+c3 = "department";
+	
+def tableFactory() {	
+	// строки
+	r1 = {"1", "john", "Research"};
+	r2 = {"2", "jack", "Sales"};
+	r3 = {"3", "tom", "Research"};
+	r4 = {"4", "bart", "Government"};
+	
+	// создаём таблицу без столбцов
+	t = [];
+	// добавляем столбцы
+	t += c1;
+	t += c2;
+	t += c3;
+	// добавляем строки
+	t += r1;
+	t += r2;
+	t += r3;
+	t += r4;
+	
+	return t;
+}
+
+// получаем таблицу
+t = tableFactory();
+// вызываем функцию main
+main();
+
+def main() {	
+	// вывести всю таблицу
+	out: t;	
+
+	// вводим из консоли название столбца
+	in: col;
+	for (r : t) {
+		out: t[col][r];
+	}
+	return;
+}
+
+return;

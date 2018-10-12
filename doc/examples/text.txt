@@ -1,0 +1,5 @@
+t = ["name"];
+c1 = "name";
+c2 = "department";
+out: t[c1][c2];
+return;

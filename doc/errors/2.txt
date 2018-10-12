@@ -1,7 +1,0 @@
-//Повторное объявление функции
-
-function union(var s1, var s2);
-function union(var s1, var s2);
-
-def main() {
-}

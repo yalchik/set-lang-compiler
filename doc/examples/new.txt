@@ -1,0 +1,26 @@
+function tab();
+function addtab(tabb);
+def tab(){
+ col1 = "name";
+ col2 = "profile";
+ r1 = { "John" , "Worker" };
+ r2 = { "Jack" , "Worker" };
+ t = [];
+ t += col1;
+ t += col2;
+ t += r1;
+ t += r2;
+ out: t;
+ addtab(t);
+ out: t;
+ return; 
+}
+def addtab(tt){
+ r3 = { "Carl" , "Principal" };
+ tt += r3;
+ return;
+}
+
+tab();
+
+return;

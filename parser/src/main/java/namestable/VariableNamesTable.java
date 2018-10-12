@@ -19,7 +19,7 @@ public class VariableNamesTable {
 
 	public boolean isDeclarated(String varName) {
 		boolean declarated = variables.containsKey(varName);
-		// РµСЃР»Рё РЅРµ РЅР°С€Р»Рё, С‚Рѕ СЃРјРѕС‚СЂРёРј РІ СЂРѕРґРёС‚РµР»СЊСЃРєРёС… С‚Р°Р±Р»РёС†Р°С…
+		// если не нашли, то смотрим в родительских таблицах
 		if (!declarated && parentTable != null) {
 			declarated = parentTable.isDeclarated(varName);
 		}
@@ -32,7 +32,7 @@ public class VariableNamesTable {
 
 	public Variable getVariable(String varName) {
 		Variable var = variables.get(varName);
-		// РµСЃР»Рё РЅРµ РЅР°С€Р»Рё, С‚Рѕ СЃРјРѕС‚СЂРёРј РІ СЂРѕРґРёС‚РµР»СЊСЃРєРёС… С‚Р°Р±Р»РёС†Р°С…
+		// если не нашли, то смотрим в родительских таблицах
 		if (var == null && parentTable != null) {
 			var = parentTable.getVariable(varName);
 		}

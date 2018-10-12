@@ -30,7 +30,7 @@
       -->
 
     <parent>
-        <groupId>by.bsuir.iyalchyk.setToCpp</groupId>
+        <groupId>by.bsuir.iyalchyk.relLang</groupId>
         <artifactId>parent</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>

@@ -8,26 +8,15 @@ public class Function {
 	private final int line;
 	private final String name;
 	private List<Variable> args = new ArrayList<>();
-	private List<String> templates = new ArrayList<>();
 	private boolean isImplemented = false;
-	private boolean templated = false;
 	public boolean returns = false;
 
-	public Function(String name, List<Variable> args, int line,
-			List<String> templates) {
+	public Function(String name, List<Variable> args, int line) {
 		if (args != null) {
 			this.args = args;
 		}
 		this.name = name;
 		this.line = line;
-		if (templates != null) {
-			this.templates = templates;
-			templated = true;
-		}
-	}
-
-	public Function(String name, List<Variable> args, int line) {
-		this(name, args, line, null);
 	}
 
 	public String getName() {
@@ -42,24 +31,23 @@ public class Function {
 		return args;
 	}
 
-	public List<String> getTemplates() {
-		return templates;
-	}
-
-	public boolean isTemplated() {
-		return templated;
-	}
-
 	public boolean implement() {
 		if (!isImplemented) {
 			return isImplemented = true;
 		}
 		return false;
+	}	
+	
+	public void setReturns() {
+	    returns = true;
+	}
+	
+	public boolean isReturns() {
+	    return returns;
 	}
 
 	@Override
 	public String toString() {
-		return "line " + line + " - " + "procedure : " + name + ", args : "
-				+ args.toString();
+		return "line " + line + " - " + "function: " + name + ", args : " + args.toString();
 	}
 }
